@@ -53,7 +53,7 @@ class VirtualBotParameters(dict):
                 try:
                     value = str( ' '.join( [ x.strip() for x in contents[ index + 2 : ] ] ) )
                     self.__parameters[ constant  ] = value
-                    continue        
+                    continue
                 except Exception as err:
                     sys.stderr.write("Not a string: " + str(err) + '\n')                
 
@@ -82,10 +82,10 @@ class TestSerialObject(unittest.TestCase):
     def setUpClass(self):
 
         print("setUpClass")
-
+        
         # reading compile-time parameters
         self.__VBParams = VirtualBotParameters(  )
-
+    
         self.__EmulatedPort = "/dev/ttyEmulatedPort"
 
         self.__Exogenous = "/dev/ttyExogenous"
@@ -217,6 +217,22 @@ class TestSerialObject(unittest.TestCase):
             timeout = 3 )
 
         comm1.write( bytes("XYZ\n", 'utf-8') )
+
+
+def suite():
+
+    suite = unittest.TestSuite()
+    suite.addTest(TestSerialObject("test_01_VirtualBotSerialObjectInstantiated") )
+    suite.addTest(TestSerialObject("test_02_VBCommSerialObjectInstantiated") )
+    suite.addTest(TestSerialObject("test_04_EmulatedPort_Write_on_Exogenous") )
+    suite.addTest(TestSerialObject("test_05_Exogenous_Write_on_EmulatedPort") )
+    suite.addTest(TestSerialObject("test_06_EmulatedPort_ErrorWhenWritingWithExogenousClosed"))
+    suite.addTest(TestSerialObject("test_07_Exogenous_ErrorWhenWritingWithEmulatedPortClosed"))
+
+    return suite
+
             
 if __name__ == '__main__':
-    unittest.main()
+
+    runner = unittest.TextTestRunner()
+    runner.run(suite())
