@@ -227,10 +227,20 @@ static int virtualbot_open(struct tty_struct *tty, struct file *file)
 	virtualbot->tty = tty;
 
 	++virtualbot->open_count;
-	if (virtualbot->open_count == 1 ) {
+	if ( virtualbot->open_count == 1 ) {
 		/* this is the first time this port is opened */
 		/* do any hardware initialization needed here */
 	}
+
+	if ( virtualbot->open_count > 1 ){
+
+		virtualbot->open_count = 1;
+
+		retval = -EBUSY;
+		goto cleanup;
+
+	}
+
 	pr_info("virtualbot: port %d openned", index);
 
 	retval = 0;
@@ -815,6 +825,14 @@ static int vb_comm_open(struct tty_struct *tty, struct file *file)
 		/* this is the first time this port is opened */
 		/* do any hardware initialization needed here */
 	}
+
+	if (vb_comm->open_count > 1 ) {
+		/** Device is open already and is exclusive  */
+
+		vb_comm->open_count = 1;
+		retval = -EBUSY;
+		goto cleanup;
+	}	
 
 	pr_info("vb-comm: port %d openned", index);
 	retval = 0;
