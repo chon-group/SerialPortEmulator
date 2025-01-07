@@ -164,25 +164,29 @@ static void virtualbot_timer(struct timer_list *t)
 static int virtualbot_open(struct tty_struct *tty, struct file *file)
 {
 	struct virtualbot_serial *virtualbot;
-	int index;
+	int index, retval;
 
 	/* initialize the pointer in case something fails */
 	tty->driver_data = NULL;
 
 	/* get the serial object associated with this tty pointer */
 	index = tty->index;
-	virtualbot = virtualbot_table[index];
 
-	pr_info("virtualbot: openning port %d ...", index);
+	pr_debug("virtualbot: openning port %d ...", index);
 
 	mutex_lock( &virtualbot_lock[ index ] );
+
+	virtualbot = virtualbot_table[index];
 
 	if (virtualbot == NULL) {
 		/* first time accessing this device, let's create it */
 		virtualbot = kmalloc(sizeof(*virtualbot), GFP_KERNEL);
 
-		if (!virtualbot)
-			return -ENOMEM;
+		if (virtualbot == NULL){
+			mutex_unlock( &virtualbot_lock[ index ] );	
+			retval = -ENOMEM;
+			goto cleanup;
+		}
 
 		virtualbot->index = index;
 			
@@ -227,21 +231,20 @@ static int virtualbot_open(struct tty_struct *tty, struct file *file)
 		/* this is the first time this port is opened */
 		/* do any hardware initialization needed here */
 	}
-
-	mutex_unlock( &virtualbot_lock[ index ] );	
-
 	pr_info("virtualbot: port %d openned", index);
 
-	return 0;
+	retval = 0;
+cleanup:
+	mutex_unlock( &virtualbot_lock[ index ] );	
+
+	return retval;
 }
 
 static void do_close(struct virtualbot_serial *virtualbot)
 {
 	int index = virtualbot->tty->index;
 
-	mutex_lock( &virtualbot_lock[ index ] );
-
-	if (!virtualbot->open_count) {
+	if (virtualbot->open_count == 0) {
 		/* port was never opened */
 		goto exit;
 	}
@@ -261,22 +264,28 @@ static void do_close(struct virtualbot_serial *virtualbot)
 	}
 exit:
 	// pr_debug("virtualbot: do_close port %d finished", index);
-	mutex_unlock( &( virtualbot_lock[ index ] ) );
+	
 }
 
 static void virtualbot_close(struct tty_struct *tty, struct file *file)
 {
-	struct virtualbot_serial *virtualbot = tty->driver_data;
-
 	pr_debug("virtualbot: closing port %d ...", tty->index);
 
-	if (virtualbot){
+	int index = tty->index;
+
+	mutex_lock( &virtualbot_lock[ index ] );
+
+	struct virtualbot_serial *virtualbot = tty->driver_data;
+
+	if ( virtualbot != NULL ){
 		pr_debug("virtualbot: do_close port %d", tty->index);
 		do_close(virtualbot);
 		pr_debug("virtualbot: do_close port %d finished", tty->index);
 	}
 
-	pr_debug("virtualbot: close port %d finished", tty->index);
+	mutex_unlock( &( virtualbot_lock[ index ] ) );
+
+	pr_info("virtualbot: port %d closed", tty->index);
 }
 
 
@@ -763,25 +772,28 @@ static const struct tty_operations virtualbot_serial_ops = {
 static int vb_comm_open(struct tty_struct *tty, struct file *file)
 {
 	struct vb_comm_serial *vb_comm;
-	int index;
+	int index, retval;
 
 	/* initialize the pointer in case something fails */
 	tty->driver_data = NULL;
 
 	/* get the serial object associated with this tty pointer */
 	index = tty->index;
-	vb_comm = vb_comm_table[ index ];
-
-	pr_info("vb_comm: openning port %d ...", index );
+	
+	pr_debug("vb_comm: openning port %d ...", index );
 
 	mutex_lock(&vb_comm_lock[ index ]);
+
+	vb_comm = vb_comm_table[ index ];
 
 	if (vb_comm == NULL) {
 		/* first time accessing this device, let's create it */
 		vb_comm = kmalloc(sizeof(*vb_comm), GFP_KERNEL);
 
-		if (!vb_comm)
-			return -ENOMEM;
+		if (vb_comm == NULL){
+			retval = -ENOMEM;
+			goto cleanup;
+		}
 
 		// mutex_init(&vm_comm->mutex);
 		vb_comm->open_count = 0;
@@ -804,18 +816,18 @@ static int vb_comm_open(struct tty_struct *tty, struct file *file)
 		/* do any hardware initialization needed here */
 	}
 
+	pr_info("vb-comm: port %d openned", index);
+	retval = 0;
+
+cleanup:
 	mutex_unlock(&vb_comm_lock[ index ]);
 
-	pr_info("vb-comm: open port %d finished", index);
-
-	return 0;
+	return retval;
 }
 
 static void vb_comm_do_close(struct vb_comm_serial *vb_comm)
 {
 	int index = vb_comm->tty->index;
-
-	mutex_lock( &vb_comm_lock[ index ] );
 
 	if ( vb_comm->open_count == 0) {
 		/* port was never opened */
@@ -838,22 +850,28 @@ static void vb_comm_do_close(struct vb_comm_serial *vb_comm)
 		// del_timer(&virtualbot->timer);
 	}
 exit:
-	mutex_unlock( &vb_comm_lock[ index ] );
+
 }
 
 static void vb_comm_close(struct tty_struct *tty, struct file *file)
 {
+	int index = tty->index;
+
+	mutex_lock( &vb_comm_lock[ index ] );
+
 	struct vb_comm_serial *vb_comm = tty->driver_data;
 
-	pr_info("vb_comm: closing port %d ...", tty->index);
+	pr_debug("vb_comm: closing port %d ...", tty->index);
 
-	if (vb_comm){
+	if ( vb_comm != NULL ){
 		pr_debug("vb_comm: do_close port %d", tty->index);
 		vb_comm_do_close(vb_comm);
 		pr_debug("vb_comm: do_close port %d finished", tty->index);
 	}
 
-	pr_debug("vb_comm: close port %d finished", tty->index);
+	mutex_unlock( &vb_comm_lock[ index ] );	
+
+	pr_info("vb_comm: port %d closed", tty->index);
 }
 
 
