@@ -14,6 +14,12 @@ VIRTUALBOT_NUMBER_OF_PORTS=4
 
 COMPILE_FLAGS=-DVIRTUALBOT_NUMBER_OF_PORTS=$(VIRTUALBOT_NUMBER_OF_PORTS)
 
+DEBUG_CFLAGS   += -fno-default-inline \
+                  -fno-inline \
+                  -fno-inline-small-functions \
+                  -fno-indirect-inlining \
+                  -fno-inline-functions-called-once
+
 # Real Arduino device
 # VIRTUALBOT_DEVICE=/dev/ttyACM0Os seguintes pacotes foram instalados automaticamente e já não são necessários:
 
@@ -32,7 +38,7 @@ all:
 
 all-dev:
 	$(MAKE) -C $(KDIR) M=$$PWD \
-		EXTRA_CFLAGS="-DDEBUG $(COMPILE_FLAGS)"\
+		EXTRA_CFLAGS="-DDEBUG $(DEBUG_CFLAGS) $(COMPILE_FLAGS)"\
 		modules 		 \
 
 clean:
