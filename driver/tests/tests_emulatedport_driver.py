@@ -201,7 +201,7 @@ class TestSerialObject(unittest.TestCase):
         comm2.close()
 
     @unittest.expectedFailure
-    def test_06_EmulatedPort_ErrorWhenWritingWithExogenousClosed(self):
+    def test_06_EmulatedPort_Error_WhenWritingWithExogenousClosed(self):
 
         comm1 = serial.Serial( str( self.__EmulatedPort + "0" ), 
             9600, 
@@ -210,13 +210,35 @@ class TestSerialObject(unittest.TestCase):
         comm1.write( bytes("XYZ\n", 'utf-8') )
 
     @unittest.expectedFailure
-    def test_07_Exogenous_ErrorWhenWritingWithEmulatedPortClosed(self):
+    def test_07_Exogenous_Error_WhenWritingWithEmulatedPortClosed(self):
 
         comm1 = serial.Serial( str( self.__Exogenous + "0" ), 
             9600, 
             timeout = 3 )
 
         comm1.write( bytes("XYZ\n", 'utf-8') )
+
+    @unittest.expectedFailure
+    def test_08_EmulatedPort_Error_ExclusiveOpen(self):
+
+        comm1 = serial.Serial( str( self.__EmulatedPort + "0" ), 
+            9600, 
+            timeout = 3 )
+
+        comm2 = serial.Serial( str( self.__EmulatedPort + "0" ), 
+            9600, 
+            timeout = 3 )
+
+    @unittest.expectedFailure
+    def test_09_Exogenous_Error_ExclusiveOpen(self):
+
+        comm1 = serial.Serial( str( self.__Exogenous + "0" ), 
+            9600, 
+            timeout = 3 )
+
+        comm2 = serial.Serial( str( self.__Exogenous + "0" ), 
+            9600, 
+            timeout = 3 )            
 
 
 def suite():
@@ -226,8 +248,13 @@ def suite():
     suite.addTest(TestSerialObject("test_02_VBCommSerialObjectInstantiated") )
     suite.addTest(TestSerialObject("test_04_EmulatedPort_Write_on_Exogenous") )
     suite.addTest(TestSerialObject("test_05_Exogenous_Write_on_EmulatedPort") )
-    suite.addTest(TestSerialObject("test_06_EmulatedPort_ErrorWhenWritingWithExogenousClosed"))
-    suite.addTest(TestSerialObject("test_07_Exogenous_ErrorWhenWritingWithEmulatedPortClosed"))
+    suite.addTest(TestSerialObject("test_06_EmulatedPort_Error_WhenWritingWithExogenousClosed"))
+    suite.addTest(TestSerialObject("test_07_Exogenous_Error_WhenWritingWithEmulatedPortClosed"))
+    suite.addTest(TestSerialObject("test_08_EmulatedPort_Error_ExclusiveOpen"))
+    suite.addTest(TestSerialObject("test_09_Exogenous_Error_ExclusiveOpen"))
+    # Repeat all writing tests after these errors
+    suite.addTest(TestSerialObject("test_04_EmulatedPort_Write_on_Exogenous") )
+    suite.addTest(TestSerialObject("test_05_Exogenous_Write_on_EmulatedPort") )        
 
     return suite
 
@@ -236,3 +263,5 @@ if __name__ == '__main__':
 
     runner = unittest.TextTestRunner()
     runner.run(suite())
+
+    # unittest.main()
