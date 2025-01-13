@@ -32,7 +32,7 @@
 
 #include <virtualbot.h>
 
-#define DRIVER_VERSION "v1.2.2"
+#define DRIVER_VERSION "v1.3.0"
 #define DRIVER_AUTHOR "Bruno Policarpo <bruno.freitas@cefet-rj.br>"
 #define DRIVER_DESC "VirtualBot TTY Serial Emulator Driver"
 
