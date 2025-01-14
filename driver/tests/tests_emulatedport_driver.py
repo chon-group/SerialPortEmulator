@@ -94,11 +94,13 @@ class TestSerialObject(unittest.TestCase):
     def setUp(self):
 
         # Clearing the kernel log for the tests
-        subprocess.run( [ "sudo" , "dmesg" , "-C" ] )
+        subprocess.run( [ "sudo" , "dmesg" , "-C" ] )        
 
     def tearDown(self):
 
-        filename = "exec{0}.log".format( 0 )
+        test_name = self.id().split(".") [ 2 ]
+
+        filename = "exec-{0}.log".format( test_name )
 
         with open(filename, "w") as output:
 
@@ -252,7 +254,7 @@ def suite():
     suite.addTest(TestSerialObject("test_07_Exogenous_Error_WhenWritingWithEmulatedPortClosed"))
     suite.addTest(TestSerialObject("test_08_EmulatedPort_Error_ExclusiveOpen"))
     suite.addTest(TestSerialObject("test_09_Exogenous_Error_ExclusiveOpen"))
-    # Repeat all writing tests after these errors
+    # Repeat all writing tests after these errors above
     suite.addTest(TestSerialObject("test_04_EmulatedPort_Write_on_Exogenous") )
     suite.addTest(TestSerialObject("test_05_Exogenous_Write_on_EmulatedPort") )        
 
