@@ -1,14 +1,19 @@
 #!/usr/bin/python3
 
 import unittest
-
 import subprocess
-
 import os
-
 import os.path
-
 import shutil
+import threading
+
+
+def automatic_open_close(emulated_port):
+
+    while True:
+        subprocess.run( [ "jasonEmbedded" , "SMA/webotsExample.mas2j" ] )
+        sleep(15)
+
 
 
 class TestStressWebots(unittest.TestCase):
@@ -22,9 +27,9 @@ class TestStressWebots(unittest.TestCase):
 
         print("setUpClass")
     
-        self.__EmulatedPort = "/dev/ttyEmulatedPort"
+        self.__EmulatedPort = "/dev/ttyEmulatedPort0"
 
-        self.__Exogenous = "/dev/ttyExogenous"
+        self.__Exogenous = "/dev/ttyExogenous0"
 
         os.chdir("/tmp")
 
@@ -49,7 +54,7 @@ class TestStressWebots(unittest.TestCase):
                     shutil.rmtree( "stress_webots" )
 
                 else:
-                    break             
+                    return 
 
             except FileNotFoundError:
                 pass
@@ -102,7 +107,11 @@ class TestStressWebots(unittest.TestCase):
 
     def test_stress_main(self):
 
-        os.chdir( "../.." )
+        os.chdir( "/tmp/stress_webots" )
+
+        threading.Thread(target=automatic_open_close,\
+            args = ( self.__EmulatedPort ) )
+#                args=( data_in, comm2 ))        
 
         subprocess.run( [ "webots" , "worlds/4_wheels_robot.wbt" ] )
 
