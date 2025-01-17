@@ -12,10 +12,11 @@ def automatic_open_close(emulated_port):
 
     #while True:
 
-    subprocess.run( [ "jasonEmbedded" , "SMA/webotsExample.mas2j" ] )
-    
-     #   sleep(15)
+    os.chdir( "/tmp/stress_webots/FourWheels_With_ChonIDE_Webots/SMA" )
 
+    subprocess.run( [ "jasonEmbedded" , "webotsExample.mas2j" ] )
+
+     #   sleep(15)
 
 class TestStressWebots(unittest.TestCase):
 
@@ -110,9 +111,7 @@ class TestStressWebots(unittest.TestCase):
 
         os.chdir( "/tmp/stress_webots/FourWheels_With_ChonIDE_Webots" )
     
-        t1 = threading.Thread(target=automatic_open_close,\
-            args = ( self.__EmulatedPort ) )
-#                args=( data_in, comm2 ))        
+        t1 = threading.Thread(target=automatic_open_close)
 
         t1.start()
 
