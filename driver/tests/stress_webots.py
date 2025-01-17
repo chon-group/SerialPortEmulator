@@ -50,6 +50,7 @@ class TestStressWebots(unittest.TestCase):
                 break
 
             except FileExistsError:
+
                 os.chdir("stress_webots")
 
                 if os.path.isfile("webots-cloned") == False:
@@ -112,13 +113,13 @@ class TestStressWebots(unittest.TestCase):
 
     def test_stress_main(self):
 
-        os.chdir( "/tmp/stress_webots/FourWheels_With_ChonIDE_Webots" )
+        os.chdir( "/tmp/stress_webots/FourWheels_With_ChonIDE_Webots/SMA" )
     
         t1 = threading.Thread(target=automatic_open_close)
 
         t1.start()
 
-        subprocess.run( [ "webots" , "worlds/4_wheels_robot.wbt" ] )
+        subprocess.run( [ "webots" , "../worlds/4_wheels_robot.wbt" ] )
 
         self.assertEqual( True, True )
 
