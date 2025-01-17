@@ -370,7 +370,7 @@ static int virtualbot_write(struct tty_struct *tty,
 	vb_comm_port = vb_comm_tty->port;
 	if (vb_comm_port == NULL){
 		pr_warn("virtualbot: %s - vb_comm %d port not set!", __func__, index);
-		retval = -ENODEV;
+		retval = -EAGAIN;
 		goto cleanup_vb_comm;
 	}
 
@@ -991,7 +991,7 @@ static int vb_comm_write(struct tty_struct *tty,
 	virtualbot_port = virtualbot_tty->port;
 	if (virtualbot_port == NULL){
 		pr_warn("vb_comm: %s - virtualbot %d port not set!", __func__, index);
-		retval = -ENODEV;
+		retval = -EAGAIN;
 		goto cleanup_virtualbot;
 	}
 
