@@ -8,7 +8,7 @@ import shutil
 import threading
 
 
-def automatic_open_close(emulated_port):
+def automatic_open_close():
 
     #while True:
 
