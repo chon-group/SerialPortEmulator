@@ -356,14 +356,14 @@ static int virtualbot_write(struct tty_struct *tty,
 	vb_comm = vb_comm_table[ index ];
 	if (vb_comm == NULL){
 		pr_warn("virtualbot: %s - vb_comm %d not set!", __func__, index);
-		retval = -ENODEV;
+		retval = -EAGAIN;
 		goto cleanup_vb_comm;
 	}
 
 	vb_comm_tty = vb_comm->tty;
 	if (vb_comm_tty == NULL ){
 		pr_warn("virtualbot: %s - vb_comm %d tty not set!", __func__, index);
-		retval = -ENODEV;
+		retval = -EAGAIN;
 		goto cleanup_vb_comm;
 	}
 
@@ -977,14 +977,14 @@ static int vb_comm_write(struct tty_struct *tty,
 	virtualbot = virtualbot_table[ index ];
 	if (virtualbot == NULL){
 		pr_warn("vb_comm: %s - virtualbot %d not set!", __func__, index);
-		retval = -ENODEV;
+		retval = -EAGAIN;
 		goto cleanup_virtualbot;
 	}
 
 	virtualbot_tty = virtualbot->tty;
 	if (virtualbot_tty == NULL){
 		pr_warn("vb_comm: %s - virtualbot %d tty not set!", __func__, index);
-		retval = -ENODEV;
+		retval = -EAGAIN;
 		goto cleanup_virtualbot;
 	}
 
