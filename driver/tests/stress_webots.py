@@ -15,7 +15,6 @@ def automatic_open_close(emulated_port):
         sleep(15)
 
 
-
 class TestStressWebots(unittest.TestCase):
 
     i = 0
@@ -107,7 +106,7 @@ class TestStressWebots(unittest.TestCase):
 
     def test_stress_main(self):
 
-        os.chdir( "/tmp/stress_webots" )
+        os.chdir( "/tmp/stress_webots/FourWheels_With_ChonIDE_Webots" )
 
         threading.Thread(target=automatic_open_close,\
             args = ( self.__EmulatedPort ) )
