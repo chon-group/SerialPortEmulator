@@ -6,12 +6,15 @@ import os
 import os.path
 import shutil
 import threading
+import time
 
 
 def automatic_open_close():
 
     #while True:
 
+    time.sleep(10)
+    
     os.chdir( "/tmp/stress_webots/FourWheels_With_ChonIDE_Webots/SMA" )
 
     subprocess.run( [ "jasonEmbedded" , "webotsExample.mas2j" ] )
@@ -42,7 +45,7 @@ class TestStressWebots(unittest.TestCase):
                 os.chdir("stress_webots")
 
                 with open("webots-cloned", "w") as f:
-                    pass                
+                    pass
 
                 break
 
@@ -75,7 +78,7 @@ class TestStressWebots(unittest.TestCase):
 
         os.chdir( "JavinoCLibrary" )
 
-        subprocess.run( [ "make" , "clean", "all"] )
+        subprocess.run( [ "make" , "clean", "SSSall"] )
 
         os.chdir( ".." )
 
@@ -102,7 +105,7 @@ class TestStressWebots(unittest.TestCase):
 
         with open(filename, "w") as output:
 
-            ret = subprocess.run([ "sudo" , "dmesg" , "-T" ], 
+            ret = subprocess.run( [ "sudo" , "dmesg" , "-T" ], 
                 capture_output=True )
 
             output.write( ret.stdout.decode("utf-8") )
