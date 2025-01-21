@@ -1,5 +1,11 @@
 #!/bin/bash
 
+REPETIONS=$1
+
+if [[ "$REPETIONS" == "" ]]; then
+    REPETIONS=10
+fi
+
 cd /tmp
 
 if [[ ! -d stress-tests_webots ]] && [[ ! -f stress-tests_webots/env-complete ]]; then
@@ -20,7 +26,7 @@ if [[ ! -d stress-tests_webots ]] && [[ ! -f stress-tests_webots/env-complete ]]
 
     cd "JavinoCLibrary"
 
-    make clean all
+    make clean all-dbg
 
     cd ..
 
@@ -31,7 +37,7 @@ if [[ ! -d stress-tests_webots ]] && [[ ! -f stress-tests_webots/env-complete ]]
     cd ..
 
     touch env-complete
-fi               
+fi
 
 cd "/tmp/stress-tests_webots/FourWheels_With_ChonIDE_Webots/"
 
@@ -45,11 +51,19 @@ sleep 20
 
 cd SMA
 
-for rep in $( seq 2 ); do 
+# killing any instance of JasonEmbedded or Java before starting
+killall -u `whoami` jasonEmbedded
+killall -u `whoami` java 
+
+for rep in $( seq 10 ); do 
+
+    clear
 
     echo "########################"
     echo "Webots Stress test $rep"
     echo "########################"
+
+    sudo dmesg -C 
 
     jasonEmbedded webotsExample.mas2j &
 
@@ -59,7 +73,10 @@ for rep in $( seq 2 ); do
 
     sleep 30
 
-    kill -9 $pid_je `ps | grep java | cut -f2 -d" "`
+    killall -u `whoami` jasonEmbedded
+    killall -u `whoami` java 
+
+    sudo dmesg -T > /tmp/stress-tests_webots/stress-test_webots${rep}.log
 
     sleep 5
 
