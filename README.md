@@ -38,15 +38,15 @@ sudo make uninstall
 
 ## Use 
 
-After the installation, by default, it will be instatiated on /dev many pairs of devices:
+After the installation, by default, it will be instantiated on /dev many pairs of devices:
 
 - /dev/ttyEmulatedPort0 <---> /dev/ttyExogenous0
 - /dev/ttyEmulatedPort1 <---> /dev/ttyExogenous1
 ...
 
-And so on. Writing on one device will make its content to be read on the other pair, and vice-versa
+And so on. Writing on one device will make its content ready to be read on the other pair, and vice-versa.
 
-You MUST at least execute a read operation on the Exogenous port to make the OS create the necessary structures
+You MUST at least open the other pair port to start sending data to it.
 
 ## Example
 In a terminal window, execute the command below to put the emulated port waiting for incoming data
