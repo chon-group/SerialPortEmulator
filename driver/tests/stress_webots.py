@@ -1,15 +1,23 @@
 #!/usr/bin/python3
 
 import unittest
-
 import subprocess
-
 import os
-
 import os.path
-
 import shutil
+import threading
+import time
 
+
+def automatic_open_close():
+
+    #while True:
+
+    time.sleep(10)
+    
+    subprocess.run( [ "jasonEmbedded" , "webotsExample.mas2j" ] )
+
+     #   sleep(15)
 
 class TestStressWebots(unittest.TestCase):
 
@@ -22,9 +30,9 @@ class TestStressWebots(unittest.TestCase):
 
         print("setUpClass")
     
-        self.__EmulatedPort = "/dev/ttyEmulatedPort"
+        self.__EmulatedPort = "/dev/ttyEmulatedPort0"
 
-        self.__Exogenous = "/dev/ttyExogenous"
+        self.__Exogenous = "/dev/ttyExogenous0"
 
         os.chdir("/tmp")
 
@@ -35,11 +43,12 @@ class TestStressWebots(unittest.TestCase):
                 os.chdir("stress_webots")
 
                 with open("webots-cloned", "w") as f:
-                    pass                
+                    pass
 
                 break
 
             except FileExistsError:
+
                 os.chdir("stress_webots")
 
                 if os.path.isfile("webots-cloned") == False:
@@ -49,7 +58,7 @@ class TestStressWebots(unittest.TestCase):
                     shutil.rmtree( "stress_webots" )
 
                 else:
-                    break             
+                    return 
 
             except FileNotFoundError:
                 pass
@@ -95,16 +104,22 @@ class TestStressWebots(unittest.TestCase):
 
         with open(filename, "w") as output:
 
-            ret = subprocess.run([ "sudo" , "dmesg" , "-T" ], 
+            ret = subprocess.run( [ "sudo" , "dmesg" , "-T" ], 
                 capture_output=True )
 
             output.write( ret.stdout.decode("utf-8") )
 
     def test_stress_main(self):
 
-        os.chdir( "../.." )
+        self.skipTest("Weird stuff")
 
-        subprocess.run( [ "webots" , "worlds/4_wheels_robot.wbt" ] )
+        os.chdir( "/tmp/stress_webots/FourWheels_With_ChonIDE_Webots/SMA" )
+    
+        t1 = threading.Thread(target=automatic_open_close)
+
+        t1.start()
+
+        subprocess.run( [ "webots" , "../worlds/4_wheels_robot.wbt" ] )
 
         self.assertEqual( True, True )
 

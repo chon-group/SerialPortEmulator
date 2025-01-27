@@ -228,10 +228,16 @@ static int virtualbot_open(struct tty_struct *tty, struct file *file)
 	virtualbot->tty = tty;
 
 	virtualbot->open_count ++;
+
+	if (virtualbot->open_count == 1 ) {
+		// First time open, do any initialization here
+		
+	}
+
 	
 	if (virtualbot->open_count > 1 ) {
-		/* this is the first time this port is opened */
-		/* do any hardware initialization needed here */
+
+		// Exclusive access, open_count will be decremented on do_close()
 
 		retval = -EBUSY;
 		goto cleanup;
@@ -815,10 +821,17 @@ static int vb_comm_open(struct tty_struct *tty, struct file *file)
 	vb_comm->tty = tty;
 
 	vb_comm->open_count++ ;
-	
-	if (vb_comm->open_count > 1 ) {
+
+	if ( vb_comm->open_count == 1){
+
 		/* this is the first time this port is opened */
 		/* do any hardware initialization needed here */
+
+	}
+	
+	if (vb_comm->open_count > 1 ) {
+
+		// open_count will be decremented on do_close()
 
 		/** Exclusive access, return error */
 		pr_err("vb-comm: port %d already open!", index);
