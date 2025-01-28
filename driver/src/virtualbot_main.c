@@ -114,6 +114,13 @@ static struct vb_comm_serial *vb_comm_table[ VIRTUALBOT_MAX_TTY_MINORS ];	/* ini
 
 static struct tty_port vb_comm_tty_port[ VIRTUALBOT_MAX_TTY_MINORS ];
 
+/** 
+ * The Registered drivers
+*/
+static struct tty_driver *virtualbot_tty_driver;
+
+static struct tty_driver *vb_comm_tty_driver;
+
 #ifdef TIMER_NOT_YET
 static void virtualbot_timer(struct timer_list *t)
 {
@@ -238,9 +245,9 @@ static int virtualbot_open(struct tty_struct *tty, struct file *file)
 	if (virtualbot->open_count > 1 ) {
 
 		// Exclusive access, open_count will be decremented on do_close()
-
 		retval = -EBUSY;
 		goto cleanup;
+
 	}
 
 	retval = 0;
@@ -826,6 +833,18 @@ static int vb_comm_open(struct tty_struct *tty, struct file *file)
 
 		/* this is the first time this port is opened */
 		/* do any hardware initialization needed here */
+		/** Initialize EmulatedPort */
+
+		tty_port_init( &virtualbot_tty_port[ index ]);
+		
+		pr_debug("virtualbot: port %i initiliazed", index);
+
+		tty_port_register_device( &virtualbot_tty_port[ index ], 
+			virtualbot_tty_driver, 
+			index, 
+			NULL);
+
+		pr_debug("virtualbot: port %i linked", index);
 
 	}
 	
@@ -873,6 +892,27 @@ static void vb_comm_do_close(struct vb_comm_serial *vb_comm)
 
 		vb_comm_table[index] = NULL;
 
+		/* Closing the emulated port ... */
+
+		tty_unregister_device(virtualbot_tty_driver, index);
+		
+		pr_debug("virtualbot: device %d unregistered" , index);
+
+		tty_port_destroy(virtualbot_tty_port + index);
+
+		pr_debug("virtualbot: port %i destroyed", index);
+
+		struct virtualbot_serial *virtualbot = virtualbot_table[ index ];
+
+		pr_debug("virtualbot: freeing VB %i", index);
+
+		if (virtualbot) {
+			/* close the port */
+			while (virtualbot->open_count)
+				do_close(virtualbot);
+		}
+		
+
 		/* shut down our timer */
 		// del_timer(&virtualbot->timer);
 	}
@@ -886,7 +926,7 @@ static void vb_comm_close(struct tty_struct *tty, struct file *file)
 
 	pr_info("vb_comm: closing port %d ...", tty->index);
 
-	if (vb_comm){
+	if ( vb_comm ) {
 		pr_debug("vb_comm: do_close port %d", tty->index);
 		vb_comm_do_close(vb_comm);
 		pr_debug("vb_comm: do_close port %d finished", tty->index);
@@ -1048,11 +1088,6 @@ static const struct tty_operations vb_comm_serial_ops = {
 	//.ioctl = virtualbot_ioctl,
 };
 
-
-static struct tty_driver *virtualbot_tty_driver;
-
-static struct tty_driver *vb_comm_tty_driver;
-
 static int __init virtualbot_init(void)
 {
 	int retval;
@@ -1102,8 +1137,10 @@ static int __init virtualbot_init(void)
 
 	pr_debug("virtualbot: set operations");
 
+
 	for (i = 0; i < VIRTUALBOT_MAX_TTY_MINORS; i++) {
 
+#if 0
 		tty_port_init( &virtualbot_tty_port[ i ]);
 		
 		pr_debug("virtualbot: port %i initiliazed", i);
@@ -1114,11 +1151,15 @@ static int __init virtualbot_init(void)
 			NULL);
 
 		pr_debug("virtualbot: port %i linked", i);
+#endif		
+
+		tty_port_init( &virtualbot_tty_port[ i ] );
 
 		virtualbot_table[ i ] = NULL;
 		
 		mutex_init( &virtualbot_lock[ i ] );
 	}
+
 
 	/* register the tty driver */
 	retval = tty_register_driver(virtualbot_tty_driver);
@@ -1175,7 +1216,7 @@ static int __init virtualbot_init(void)
 		tty_port_init(& vb_comm_tty_port[ i ] );
 		pr_debug("vb-comm: port %i initiliazed", i);
 
-		tty_port_register_device( & vb_comm_tty_port[ i ], 
+		tty_port_register_device( & vb_comm_tty_port[ i ],
 			vb_comm_tty_driver, 
 			i, 
 			NULL);
@@ -1222,6 +1263,7 @@ static void __exit virtualbot_exit(void)
 		tty_port_destroy(virtualbot_tty_port + i);
 
 		pr_debug("virtualbot: port %i destroyed", i);
+
 	}
 
 	tty_unregister_driver(virtualbot_tty_driver);
@@ -1265,13 +1307,17 @@ static void __exit virtualbot_exit(void)
 
 	for (i = 0; i < VIRTUALBOT_MAX_TTY_MINORS; ++i) {
 
-		tty_unregister_device(vb_comm_tty_driver, i);
-		
-		pr_debug("vb-comm: device %d unregistered" , i);
+		if ( tty_port_active( vb_comm_tty_port + i) ) {
 
-		tty_port_destroy(vb_comm_tty_port + i);
+			tty_unregister_device(vb_comm_tty_driver, i);
+			
+			pr_debug("vb-comm: device %d unregistered" , i);
 
-		pr_debug("vb-comm: port %i destroyed", i);
+			tty_port_destroy(vb_comm_tty_port + i);
+
+			pr_debug("vb-comm: port %i destroyed", i);
+
+		}
 	}
 
 	tty_unregister_driver(vb_comm_tty_driver);
