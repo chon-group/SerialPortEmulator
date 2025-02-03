@@ -251,7 +251,6 @@ static int virtualbot_open(struct tty_struct *tty, struct file *file)
 	}
 
 	retval = 0;
-
 	pr_info("virtualbot: port %d openned", index);
 
 cleanup:
@@ -873,6 +872,10 @@ static void vb_comm_do_close(struct vb_comm_serial *vb_comm)
 {
 	int index = vb_comm->tty->index;
 
+	struct virtualbot_serial *virtualbot;
+
+	struct tty_struct *virtualbot_tty;
+
 	mutex_lock( &vb_comm_lock[ index ] );
 
 	if ( vb_comm->open_count == 0) {
@@ -893,6 +896,30 @@ static void vb_comm_do_close(struct vb_comm_serial *vb_comm)
 		vb_comm_table[index] = NULL;
 
 		/* Closing the emulated port ... */
+#ifdef LETS_IGNORE_EMULATEDPORT
+		mutex_lock( &virtualbot_lock[ index ] );
+	
+		virtualbot = virtualbot_table[ index ];
+
+		if (virtualbot != NULL ){
+
+			pr_debug("virtualbot: port %i is open, force closing it", index);
+
+			virtualbot_tty = virtualbot->tty;
+
+			mutex_unlock( &virtualbot_lock[ index ] );
+
+			tty_release_struct( virtualbot_tty, index);
+					
+		} else {
+
+			pr_debug("virtualbot: port %i is not open", index);
+
+			mutex_unlock( &virtualbot_lock[ index ] );
+	
+		}
+#endif
+		
 
 		tty_unregister_device(virtualbot_tty_driver, index);
 		
@@ -901,17 +928,6 @@ static void vb_comm_do_close(struct vb_comm_serial *vb_comm)
 		tty_port_destroy(virtualbot_tty_port + index);
 
 		pr_debug("virtualbot: port %i destroyed", index);
-
-		struct virtualbot_serial *virtualbot = virtualbot_table[ index ];
-
-		pr_debug("virtualbot: freeing VB %i", index);
-
-		if (virtualbot) {
-			/* close the port */
-			while (virtualbot->open_count)
-				do_close(virtualbot);
-		}
-		
 
 		/* shut down our timer */
 		// del_timer(&virtualbot->timer);
@@ -1152,9 +1168,6 @@ static int __init virtualbot_init(void)
 
 		pr_debug("virtualbot: port %i linked", i);
 #endif		
-
-		tty_port_init( &virtualbot_tty_port[ i ] );
-
 		virtualbot_table[ i ] = NULL;
 		
 		mutex_init( &virtualbot_lock[ i ] );
