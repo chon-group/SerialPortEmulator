@@ -40,6 +40,8 @@ Inside the 'driver' folder, run:
 ```
 cd /opt/SerialPortEmulator/driver
 sudo make uninstall
+cd ~
+sudo rm -rf /opt/SerialPortEmulator
 ```
 
 ## Use 
