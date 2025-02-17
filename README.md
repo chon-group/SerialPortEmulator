@@ -10,13 +10,16 @@
 1) Install the dependencies. On your Debian-like Linux machine, run:
 
 ```
+sudo apt update
 sudo apt install linux-headers-`uname -r` gcc binutils make
 ```
 
 2) Inside the driver folder, run:
 
 ```
-make clean all
+sudo -C /opt clone https://github.com/LabRedesCefetRJ/WeGIA.git
+cd /opt/SerialPortEmulator/driver
+sudo make clean all
 sudo make modules_install
 sudo make install
 ```
@@ -35,6 +38,7 @@ sudo chmod 777 /dev/ttyExogenous0
 Inside the 'driver' folder, run: 
 
 ```
+cd /opt/SerialPortEmulator/driver
 sudo make uninstall
 ```
 
