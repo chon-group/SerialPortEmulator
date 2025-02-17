@@ -5,7 +5,7 @@ if [ ! -f /usr/bin/xterm ]; then
     sudo apt install xterm
 fi
 
-xterm -e "cd pong; ./pong.sh" &
+sudo xterm -e "cd pong; ./pong.sh" &
 sleep 3
-xterm  -e "cd ping; ./ping.sh" &
+sudo xterm -e "cd ping; ./ping.sh" &
 
