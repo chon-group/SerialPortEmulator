@@ -7,3 +7,6 @@ modules.order
 *.log
 *.o.cmd
 *.cmd
+
+driver/tests/ping-pong/ping/pythonENV/
+driver/tests/ping-pong/pong/pythonENV/
