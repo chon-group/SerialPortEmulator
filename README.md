@@ -11,7 +11,7 @@
 
 ```
 sudo apt update
-sudo apt install linux-headers-`uname -r` gcc binutils make sudo
+sudo apt install linux-headers-`uname -r` gcc binutils make git
 ```
 
 2) Inside the driver folder, run:
