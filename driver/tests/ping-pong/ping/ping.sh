@@ -2,7 +2,7 @@
 if [ ! -f ./pythonENV/bin/python3 ]; then
     clear
     sudo apt update
-    sudo apt install xterm python3 python3-pip -y
+    sudo apt install xterm python3 python3-pip python3-venv -y
     python3 -m venv pythonENV
     source pythonENV/bin/activate
     pip install --upgrade pip
