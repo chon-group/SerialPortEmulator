@@ -17,7 +17,7 @@ sudo apt install linux-headers-`uname -r` gcc binutils make sudo
 2) Inside the driver folder, run:
 
 ```
-sudo git -C /opt clone https://github.com/LabRedesCefetRJ/WeGIA.git
+sudo git -C /opt clone https://github.com/chon-group/SerialPortEmulator.git
 cd /opt/SerialPortEmulator/driver
 sudo make clean all
 sudo make modules_install
