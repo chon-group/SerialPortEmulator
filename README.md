@@ -68,8 +68,7 @@ Open another terminal window and run the below command. On the first terminal Wi
 
 * __Attribution__ — You must give __appropriate credit__ like below:
 
-FREITAS, Bruno Policarpo Toledo; LAZARIN, Nilson Mori; PANTOJA, Carlos Eduardo. Uma Proposta de Emulador de Portas Seriais para Sistemas Multiagentes Embarcados. In: WORKSHOP-SCHOOL ON AGENTS, ENVIRONMENTS, AND APPLICATIONS (WESAAC), 17. , 2023, Pelotas/RS. Anais [...]. Porto Alegre: Sociedade Brasileira de Computação, 2023 . p. 55-66. ISSN 2326-5434. URL: https://sol.sbc.org.br/index.php/wesaac/article/view/33437
-
+FREITAS, Bruno Policarpo Toledo; LAZARIN, Nilson Mori; PANTOJA, Carlos Eduardo. A Proposal for a Serial Port Emulator for Embedded Multi-Agent Systems. In: WORKSHOP-SCHOOL ON AGENTS, ENVIRONMENTS, AND APPLICATIONS (WESAAC), 17. , 2023, Pelotas/RS. Anais [...]. Porto Alegre: Sociedade Brasileira de Computação, 2023 . p. 55-66. ISSN 2326-5434. DOI: https://doi.org/10.5753/wesaac.2023.33437. 
 
 <details>
 <summary> Cite using Bibtex </summary>
@@ -78,17 +77,16 @@ FREITAS, Bruno Policarpo Toledo; LAZARIN, Nilson Mori; PANTOJA, Carlos Eduardo. 
 ```
 @inproceedings{wesaac,
  author = {Bruno Freitas and Nilson Lazarin and Carlos Pantoja},
- title = {Uma Proposta de Emulador de Portas Seriais para Sistemas Multiagentes Embarcados},
+ title = {{A Proposal for a Serial Port Emulator for Embedded Multi-Agent Systems}},
  booktitle = {Proceedings of the 17th Workshop-School on Agents, Environments, and Applications},
  location = {Pelotas/RS},
  year = {2023},
- keywords = {},
  issn = {2326-5434},
  pages = {55--66},
  publisher = {SBC},
  address = {Porto Alegre, RS, Brasil},
+ doi = {10.5753/wesaac.2023.33437},
  url = {https://sol.sbc.org.br/index.php/wesaac/article/view/33437}
 }
-
 ```
 </details>
