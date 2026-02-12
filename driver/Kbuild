@@ -2,4 +2,4 @@ obj-m := virtualbot.o
 
 virtualbot-y := src/virtualbot_main.o
 
-ccflags-y := -I$(src)/include -DDEBUG
+ccflags-y := -I$(src)/include -DVIRTUALBOT_NUMBER_OF_PORTS=4

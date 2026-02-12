@@ -12,8 +12,6 @@ VIRTUALBOT_DEVICE=/dev/virtualbot
 # Number of virtual ports to make
 VIRTUALBOT_NUMBER_OF_PORTS=4
 
-COMPILE_FLAGS=-DVIRTUALBOT_NUMBER_OF_PORTS=$(VIRTUALBOT_NUMBER_OF_PORTS)
-
 DEBUG_CFLAGS   += -fno-default-inline \
                   -fno-inline \
                   -fno-inline-small-functions \
@@ -33,13 +31,11 @@ setup_dev_environment:
 
 all:
 	$(MAKE) -C $(KDIR) M=$$PWD \
-		EXTRA_CFLAGS="$(COMPILE_FLAGS)" \
 		modules
 
 all-dev:
 	$(MAKE) -C $(KDIR) M=$$PWD \
-		EXTRA_CFLAGS="-DDEBUG $(DEBUG_CFLAGS) $(COMPILE_FLAGS)"\
-		modules 		 \
+		modules
 
 clean:
 	$(MAKE) -C $(KDIR) M=$$PWD clean
@@ -60,8 +56,9 @@ check_device_logs:
 
 install:
 	sudo modprobe virtualbot
-	sudo chmod a+rw /dev/ttyEmulatedPort0
-	sudo chmod a+rw /dev/ttyExogenous0
+	sudo chmod a+rw /dev/ttyEmulatedPort*
+	sudo chmod a+rw /dev/ttyExogenous*
+	sudo usermod -aG dialout $(USER)
 
 uninstall:
 	sudo rm -f /dev/virtualbot
