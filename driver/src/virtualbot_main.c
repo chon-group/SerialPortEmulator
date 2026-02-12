@@ -1243,7 +1243,7 @@ static void __exit virtualbot_exit(void)
 				do_close(virtualbot);
 
 			/* shut down our timer and free the memory */
-			del_timer(&virtualbot->timer);
+			// del_timer(&virtualbot->timer);
 
 			/* deallocate receive buffer */
 			kfree( virtualbot->recv_buffer.buf );
