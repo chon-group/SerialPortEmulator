@@ -34,7 +34,7 @@ all:
 		modules
 
 all-dev:
-	$(MAKE) -C $(KDIR) M=$$PWD \
+	$(MAKE) DEBUG=1 -C $(KDIR) M=$$PWD \
 		modules
 
 clean:

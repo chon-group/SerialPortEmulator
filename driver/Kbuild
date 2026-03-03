@@ -3,3 +3,7 @@ obj-m := virtualbot.o
 virtualbot-y := src/virtualbot_main.o
 
 ccflags-y := -I$(src)/include -DVIRTUALBOT_NUMBER_OF_PORTS=4
+
+ifeq ($(DEBUG),1)
+ccflags-y += -DDEBUG
+endif
